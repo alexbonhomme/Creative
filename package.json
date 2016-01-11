@@ -1,0 +1,17 @@
+{
+  "name": "creative",
+  "version": "0.0.1",
+  "author": "Alexandre Bonhomme",
+  "description": "My personnal website",
+  "license": "Apache-2.0",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/blckshrk/Creative.git"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-sass": "^2.1.1",
+    "gulp-sourcemaps": "^1.6.0"
+  }
+}
