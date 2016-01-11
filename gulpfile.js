@@ -1,8 +1,25 @@
 'use strict';
 
 var gulp = require('gulp'),
+    connect = require('gulp-connect'),
+    watch = require('gulp-watch'),
     sass = require('gulp-sass'),
     sourcemaps = require('gulp-sourcemaps');
+
+gulp.task('connect', function() {
+    connect.server({
+        livereload: true
+    });
+});
+
+gulp.task('livereload', function() {
+    watch([
+        'css/*.css',
+        'js/**/*.js',
+        '*.html'
+    ])
+    .pipe(connect.reload());
+});
 
 gulp.task('sass', function () {
     gulp.src('scss/**/*.scss')
@@ -14,7 +31,15 @@ gulp.task('sass', function () {
         .pipe(gulp.dest('css/'));
 });
 
-//Watch task
-gulp.task('default', function () {
+gulp.task('watch', function () {
     gulp.watch('scss/**/*.scss', ['sass']);
 });
+
+// Usable tasks
+
+gulp.task('serve', [
+    'sass',
+    'connect',
+    'livereload',
+    'watch'
+]);
