@@ -5,7 +5,8 @@ var gulp = require('gulp'),
     watch = require('gulp-watch'),
     sass = require('gulp-sass'),
     sourcemaps = require('gulp-sourcemaps'),
-    browserify = require('gulp-browserify');
+    browserify = require('gulp-browserify'),
+    rename = require('gulp-rename');
 
 gulp.task('connect', function() {
     connect.server({
@@ -38,8 +39,10 @@ gulp.task('browserify', function () {
     gulp.src('src/js/app.js')
         .pipe(browserify({
             insertGlobals: true,
-            debug: !gulp.env.production
+            // debug: !gulp.env.production
+            debug: true
         }))
+        .pipe(rename('bundle.js'))
         .pipe(gulp.dest('./src/js'));
 });
 
@@ -64,6 +67,7 @@ gulp.task('copy', function () {
 
 gulp.task('serve', [
     'sass',
+    'browserify',
     'connect',
     'livereload',
     'watch'
