@@ -1,14 +1,17 @@
 window.jQuery = $ = require('jquery');
 var bootstrap = require('bootstrap/dist/js/bootstrap');
+require('velocity-animate');
 
-// jQuery for page scrolling feature - requires jQuery Easing plugin
-// $('a.page-scroll').bind('click', function(event) {
-//     var $anchor = $(this);
-//     $('html, body').stop().animate({
-//         scrollTop: ($($anchor.attr('href')).offset().top - 50)
-//     }, 1250, 'easeInOutExpo');
-//     event.preventDefault();
-// });
+$('a.page-scroll').on('click', function (event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    var target = $(this).attr('href');
+    $(target).velocity('scroll', {
+        duration: 1250,
+        easing: 'ease-in-out'
+    });
+});
 
 // Highlight the top nav as scrolling occurs
 $('body').scrollspy({
@@ -17,7 +20,7 @@ $('body').scrollspy({
 });
 
 // Closes the Responsive Menu on Menu Item Click
-$('.navbar-collapse ul li a').click(function() {
+$('.navbar-collapse ul li a').on('click', function () {
     $('.navbar-toggle:visible').click();
 });
 
