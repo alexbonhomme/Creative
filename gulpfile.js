@@ -16,7 +16,8 @@ gulp.task('livereload', function() {
     watch([
         'css/*.css',
         'js/**/*.js',
-        '*.html'
+        'img/**/*',
+        '**/*.html'
     ])
     .pipe(connect.reload());
 });
