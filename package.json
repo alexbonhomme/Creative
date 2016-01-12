@@ -10,9 +10,9 @@
     "url": "git+https://github.com/blckshrk/Creative.git"
   },
   "devDependencies": {
+    "del": "^2.2.0",
     "gulp": "^3.9.0",
     "gulp-browserify": "^0.5.1",
-    "gulp-clean": "^0.3.1",
     "gulp-connect": "^2.3.1",
     "gulp-if": "^2.0.0",
     "gulp-rename": "^1.2.2",

@@ -1,6 +1,8 @@
 'use strict';
 
 var argv = require('yargs').argv,
+    del = require('del'),
+
     gulp = require('gulp'),
     connect = require('gulp-connect'),
     watch = require('gulp-watch'),
@@ -8,7 +10,6 @@ var argv = require('yargs').argv,
     sourcemaps = require('gulp-sourcemaps'),
     browserify = require('gulp-browserify'),
     rename = require('gulp-rename'),
-    clean = require('gulp-clean'),
     gulpif = require('gulp-if');
 
 gulp.task('connect', function() {
@@ -53,6 +54,21 @@ gulp.task('watch', function () {
     gulp.watch('src/js/**/*.js', ['browserify']);
 });
 
+gulp.task('clean:dist', function () {
+    // WARNING: async function
+    return del(['dist/']);
+});
+
+gulp.task('copy:dist', ['clean:dist'], function () {
+    gulp.src([
+        'src/js/bundle.js',
+        'src/css/main.css',
+        'src/assets/**/*',
+        'src/index.html'
+    ], {
+        base: 'src/'
+    }).pipe(gulp.dest('dist/'));
+});
 
 /**
  * Usable tasks
@@ -68,20 +84,6 @@ gulp.task('serve', [
 
 gulp.task('build', [
     'sass',
-    'browserify'
-], function () {
-    gulp.src('dist/', {
-        read: false
-    }).pipe(clean({
-        force: true
-    }));
-
-    gulp.src([
-        'src/js/bundle.js',
-        'src/css/main.css',
-        'src/assets/**/*',
-        'src/index.html'
-    ], {
-        base: 'src/'
-    }).pipe(gulp.dest('dist/'));
-});
+    'browserify',
+    'copy:dist'
+]);
