@@ -2,6 +2,7 @@ window.jQuery = window.$ = require('jquery');
 
 require('bootstrap-sass');
 require('velocity-animate');
+require('vide');
 
 //  Smooth scroll
 $('a.page-scroll').on('click', function (event) {
