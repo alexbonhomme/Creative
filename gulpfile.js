@@ -1,12 +1,15 @@
 'use strict';
 
-var gulp = require('gulp'),
+var argv = require('yargs').argv,
+    gulp = require('gulp'),
     connect = require('gulp-connect'),
     watch = require('gulp-watch'),
     sass = require('gulp-sass'),
     sourcemaps = require('gulp-sourcemaps'),
     browserify = require('gulp-browserify'),
-    rename = require('gulp-rename');
+    rename = require('gulp-rename'),
+    clean = require('gulp-clean'),
+    gulpif = require('gulp-if');
 
 gulp.task('connect', function() {
     connect.server({
@@ -19,7 +22,7 @@ gulp.task('livereload', function() {
     watch([
         'src/css/*.css',
         'src/js/*.js',
-        'src/img/**/*',
+        'src/assets/**/*',
         'src/**/*.html'
     ])
     .pipe(connect.reload());
@@ -27,23 +30,22 @@ gulp.task('livereload', function() {
 
 gulp.task('sass', function () {
     gulp.src('src/scss/**/*.scss')
-        .pipe(sourcemaps.init())
+        .pipe(gulpif(!argv.production, sourcemaps.init()))
         .pipe(sass({
-            outputStyle: 'expanded'
+            outputStyle: argv.production ? 'compressed' : 'expanded'
         }).on('error', sass.logError))
-        .pipe(sourcemaps.write())
-        .pipe(gulp.dest('./src/css'));
+        .pipe(gulpif(!argv.production, sourcemaps.write()))
+        .pipe(gulp.dest('src/css'));
 });
 
 gulp.task('browserify', function () {
     gulp.src('src/js/app.js')
         .pipe(browserify({
             insertGlobals: true,
-            // debug: !gulp.env.production
-            debug: true
+            debug: !argv.production
         }))
         .pipe(rename('bundle.js'))
-        .pipe(gulp.dest('./src/js'));
+        .pipe(gulp.dest('src/js'));
 });
 
 gulp.task('watch', function () {
@@ -51,19 +53,10 @@ gulp.task('watch', function () {
     gulp.watch('src/js/**/*.js', ['browserify']);
 });
 
-gulp.task('copy', function () {
-    gulp.src([
-        'src/js/**/*',
-        'src/css/**/*',
-        'src/assets/**/*',
-        'src/index.html'
-    ], {
-        base: 'src/'
-    }).pipe(gulp.dest('dist/'));
-});
 
-
-// Usable tasks
+/**
+ * Usable tasks
+ */
 
 gulp.task('serve', [
     'sass',
@@ -72,3 +65,23 @@ gulp.task('serve', [
     'livereload',
     'watch'
 ]);
+
+gulp.task('build', [
+    'sass',
+    'browserify'
+], function () {
+    gulp.src('dist/', {
+        read: false
+    }).pipe(clean({
+        force: true
+    }));
+
+    gulp.src([
+        'src/js/bundle.js',
+        'src/css/main.css',
+        'src/assets/**/*',
+        'src/index.html'
+    ], {
+        base: 'src/'
+    }).pipe(gulp.dest('dist/'));
+});
