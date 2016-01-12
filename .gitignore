@@ -4,3 +4,4 @@ dist/
 
 # generated
 src/js/bundle.js
+src/css/
