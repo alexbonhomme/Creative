@@ -12,22 +12,39 @@ var argv = require('yargs').argv,
     rename = require('gulp-rename'),
     gulpif = require('gulp-if');
 
+/**
+ * Server/livereload tasks
+ */
+
 gulp.task('connect', function() {
     connect.server({
-        root: 'src/',
+        root: '.tmp/',
         livereload: true
     });
 });
 
 gulp.task('livereload', function() {
     watch([
-        'src/css/*.css',
-        'src/js/*.js',
-        'src/assets/**/*',
-        'src/**/*.html'
+        '.tmp/css/main.css',
+        '.tmp/js/bundle.js',
+        '.tmp/assets/**/*',
+        '.tmp/**/*.html'
     ])
     .pipe(connect.reload());
 });
+
+gulp.task('watch', function () {
+    gulp.watch('src/scss/**/*.scss', ['sass']);
+    gulp.watch('src/js/**/*.js', ['browserify']);
+    gulp.watch([
+        'src/assets/**/*',
+        'src/**/*.html'
+    ], ['copy:tmp']);
+});
+
+/**
+ * Compilation tasks
+ */
 
 gulp.task('sass', function () {
     gulp.src('src/scss/**/*.scss')
@@ -36,7 +53,8 @@ gulp.task('sass', function () {
             outputStyle: argv.production ? 'compressed' : 'expanded'
         }).on('error', sass.logError))
         .pipe(gulpif(!argv.production, sourcemaps.write()))
-        .pipe(gulp.dest('src/css'));
+        .pipe(rename('styles.css'))
+        .pipe(gulp.dest('.tmp/css'));
 });
 
 gulp.task('browserify', function () {
@@ -46,12 +64,28 @@ gulp.task('browserify', function () {
             debug: !argv.production
         }))
         .pipe(rename('bundle.js'))
-        .pipe(gulp.dest('src/js'));
+        .pipe(gulp.dest('.tmp/js'));
 });
 
-gulp.task('watch', function () {
-    gulp.watch('src/scss/**/*.scss', ['sass']);
-    gulp.watch('src/js/**/*.js', ['browserify']);
+/**
+ * Copy/clean tasks
+ */
+
+gulp.task('clean:tmp', function () {
+    // WARNING: async function
+    return del([
+        '.tmp/assets/**/*',
+        '.tmp/**/*.html'
+    ]);
+});
+
+gulp.task('copy:tmp', ['clean:tmp'], function () {
+    gulp.src([
+        'src/assets/**/*',
+        'src/**/*.html'
+    ], {
+        base: 'src/'
+    }).pipe(gulp.dest('.tmp/'));
 });
 
 gulp.task('clean:dist', function () {
@@ -61,20 +95,27 @@ gulp.task('clean:dist', function () {
 
 gulp.task('copy:dist', ['clean:dist'], function () {
     gulp.src([
-        'src/js/bundle.js',
-        'src/css/main.css',
+        '.tmp/js/bundle.js',
+        '.tmp/css/main.css',
+    ], {
+        base: '.tmp/'
+    }).pipe(gulp.dest('dist/'));
+
+    gulp.src([
         'src/assets/**/*',
-        'src/index.html'
+        'src/**/*.html'
     ], {
         base: 'src/'
     }).pipe(gulp.dest('dist/'));
 });
 
+
 /**
- * Usable tasks
+ * Publics tasks
  */
 
 gulp.task('serve', [
+    'copy:tmp',
     'sass',
     'browserify',
     'connect',
