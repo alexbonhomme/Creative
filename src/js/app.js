@@ -1,5 +1,8 @@
-window.jQuery = $ = require('jquery');
+window.jQuery = window.$ = $ = require('jquery');
+
+// Bootstrap need global $ ...
 var bootstrap = require('bootstrap/dist/js/bootstrap');
+
 require('velocity-animate');
 
 $('a.page-scroll').on('click', function (event) {
@@ -30,5 +33,3 @@ $('#mainNav').affix({
         top: 100
     }
 });
-
-// Scrolling Animations
