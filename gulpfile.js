@@ -25,7 +25,7 @@ gulp.task('connect', function() {
 
 gulp.task('livereload', function() {
     watch([
-        '.tmp/css/main.css',
+        '.tmp/css/styles.css',
         '.tmp/js/bundle.js',
         '.tmp/assets/**/*',
         '.tmp/**/*.html'
@@ -96,7 +96,7 @@ gulp.task('clean:dist', function () {
 gulp.task('copy:dist', ['clean:dist'], function () {
     gulp.src([
         '.tmp/js/bundle.js',
-        '.tmp/css/main.css',
+        '.tmp/css/styles.css',
     ], {
         base: '.tmp/'
     }).pipe(gulp.dest('dist/'));
