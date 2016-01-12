@@ -1,10 +1,9 @@
-window.jQuery = window.$ = $ = require('jquery');
+window.jQuery = window.$ = require('jquery');
 
-// Bootstrap need global $ ...
-var bootstrap = require('bootstrap/dist/js/bootstrap');
-
+require('bootstrap-sass');
 require('velocity-animate');
 
+//  Smooth scroll
 $('a.page-scroll').on('click', function (event) {
     event.preventDefault();
     event.stopPropagation();

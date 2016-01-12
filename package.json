@@ -19,7 +19,7 @@
     "gulp-watch": "^4.3.5"
   },
   "dependencies": {
-    "bootstrap": "^3.3.6",
+    "bootstrap-sass": "^3.3.6",
     "jquery": "^2.2.0",
     "scrollmagic": "^2.0.5",
     "velocity-animate": "^1.2.3"
