@@ -6,9 +6,7 @@ branches:
 install:
     - npm install
 script:
-    - gulp build
-after_success:
-    gulp deploy --ftp_host $FTP_HOST --ftp_user $FTP_USER --ftp_password $FTP_PASSWORD --ftp_path $FTP_PATH
+    - gulp deploy --ftp_host $FTP_HOST --ftp_user $FTP_USER --ftp_password $FTP_PASSWORD --ftp_path $FTP_PATH
 env:
   global:
     - FTP_PATH=/beta
