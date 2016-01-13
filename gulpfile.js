@@ -51,7 +51,7 @@ gulp.task('watch', function () {
  */
 
 gulp.task('sass', function () {
-    gulp.src('src/scss/**/*.scss')
+    return gulp.src('src/scss/**/*.scss')
         .pipe(gulpif(!argv.production, sourcemaps.init()))
         .pipe(sass({
             outputStyle: argv.production ? 'compressed' : 'expanded'
@@ -62,7 +62,7 @@ gulp.task('sass', function () {
 });
 
 gulp.task('browserify', function () {
-    gulp.src('src/js/app.js')
+    return gulp.src('src/js/app.js')
         .pipe(browserify({
             insertGlobals: true,
             debug: !argv.production
@@ -78,7 +78,7 @@ gulp.task('browserify', function () {
 gulp.task('clean:tmp', function () {
     // WARNING: async function
     return del([
-        '.tmp/assets/**/*',
+        '.tmp/assets/**',
         '.tmp/**/*.html'
     ]);
 });
@@ -94,10 +94,10 @@ gulp.task('copy:tmp', ['clean:tmp'], function () {
 
 gulp.task('clean:dist', function () {
     // WARNING: async function
-    return del(['dist/']);
+    return del(['dist/**']);
 });
 
-gulp.task('copy:dist', ['clean:dist'], function () {
+gulp.task('copy:dist', ['sass', 'browserify','clean:dist'], function () {
     var copyTmp = gulp.src([
         '.tmp/js/bundle.js',
         '.tmp/css/styles.css',
@@ -140,6 +140,7 @@ gulp.task('ftp:dist', ['build'], function () {
  */
 
 gulp.task('serve', [
+    'clean:tmp',
     'copy:tmp',
     'sass',
     'browserify',
@@ -149,6 +150,7 @@ gulp.task('serve', [
 ]);
 
 gulp.task('build', [
+    'clean:dist',
     'sass',
     'browserify',
     'copy:dist'
