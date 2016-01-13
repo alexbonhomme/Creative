@@ -1,7 +1,10 @@
 'use strict';
 
-var argv = require('yargs').argv,
+var config = require('./config.json'),
+    argv = require('yargs').argv,
     del = require('del'),
+    merge = require('merge-stream'),
+    ftp = require('vinyl-ftp'),
 
     gulp = require('gulp'),
     connect = require('gulp-connect'),
@@ -10,7 +13,8 @@ var argv = require('yargs').argv,
     sourcemaps = require('gulp-sourcemaps'),
     browserify = require('gulp-browserify'),
     rename = require('gulp-rename'),
-    gulpif = require('gulp-if');
+    gulpif = require('gulp-if'),
+    gutil = require('gulp-util');
 
 /**
  * Server/livereload tasks
@@ -27,7 +31,7 @@ gulp.task('livereload', function() {
     watch([
         '.tmp/css/styles.css',
         '.tmp/js/bundle.js',
-        '.tmp/assets/**/*',
+        '.tmp/assets/**',
         '.tmp/**/*.html'
     ])
     .pipe(connect.reload());
@@ -37,7 +41,7 @@ gulp.task('watch', function () {
     gulp.watch('src/scss/**/*.scss', ['sass']);
     gulp.watch('src/js/**/*.js', ['browserify']);
     gulp.watch([
-        'src/assets/**/*',
+        'src/assets/**',
         'src/**/*.html'
     ], ['copy:tmp']);
 });
@@ -80,8 +84,8 @@ gulp.task('clean:tmp', function () {
 });
 
 gulp.task('copy:tmp', ['clean:tmp'], function () {
-    gulp.src([
-        'src/assets/**/*',
+    return gulp.src([
+        'src/assets/**',
         'src/**/*.html'
     ], {
         base: 'src/'
@@ -94,20 +98,41 @@ gulp.task('clean:dist', function () {
 });
 
 gulp.task('copy:dist', ['clean:dist'], function () {
-    gulp.src([
+    var copyTmp = gulp.src([
         '.tmp/js/bundle.js',
         '.tmp/css/styles.css',
     ], {
         base: '.tmp/'
     }).pipe(gulp.dest('dist/'));
 
-    gulp.src([
-        'src/assets/**/*',
+    var copySrc = gulp.src([
+        'src/assets/**',
         'src/**/*.html'
     ], {
         base: 'src/'
     }).pipe(gulp.dest('dist/'));
+
+    return merge(copyTmp, copySrc);
 });
+
+gulp.task('ftp:dist', ['build'], function () {
+    var conn = ftp.create({
+        host: config.ftp.host,
+        user: config.ftp.user,
+        password: config.ftp.password,
+        parallel: 10,
+        log: gutil.log
+    });
+
+    // turn off buffering in gulp.src for best performance
+    return gulp.src('dist/**', {
+        base: 'dist/',
+        buffer: false
+    })
+    .pipe(conn.newer(config.ftp.path))
+    .pipe(conn.dest(config.ftp.path));
+
+} );
 
 
 /**
@@ -127,4 +152,9 @@ gulp.task('build', [
     'sass',
     'browserify',
     'copy:dist'
+]);
+
+gulp.task('deploy', [
+    'build',
+    'ftp:dist'
 ]);
