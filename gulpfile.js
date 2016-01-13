@@ -11,7 +11,7 @@ try {
             "host": argv.ftp_host,
             "user": argv.ftp_user,
             "password": argv.ftp_password,
-            "path": argv.ftp_path
+            "path": argv.ftp_path || "/www"
         }
     };
 }
