@@ -1,8 +1,22 @@
 'use strict';
 
-var config = require('./config.json'),
-    argv = require('yargs').argv,
-    del = require('del'),
+var argv = require('yargs').argv,
+    config = {};
+
+try {
+    config = require('./config.json');
+} catch (e) {
+    config = {
+        "ftp": {
+            "host": argv.ftp_host,
+            "user": argv.ftp_user,
+            "password": argv.ftp_password,
+            "path": argv.ftp_path
+        }
+    };
+}
+
+var del = require('del'),
     merge = require('merge-stream'),
     ftp = require('vinyl-ftp'),
 
